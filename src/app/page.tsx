@@ -1,65 +1,111 @@
-import Image from "next/image";
+"use client";
+import React, { useEffect, useCallback, useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDashboardStore } from '@/components/store/useDashboardStore';
+import { StatCard } from '@/components/dashboard/statCard';
+import DashboardFilters from '@/components/dashboard/dashboardFilter';
+import Header from '@/components/layout/header';
+import Sidebar from '@/components/layout/sidebar';
+import { AlertCircle } from "lucide-react";
 
-export default function Home() {
+
+const RevenueChart = React.lazy(() => import("@/components/dashboard/revenueChart"));
+const BarChart = React.lazy(() => import("@/components/dashboard/barChart"));
+const UserPieChart = React.lazy(() => import("@/components/dashboard/userPieChart"));
+const TrafficSourceChart = React.lazy(() => import("@/components/dashboard/trafficSourceChart"));
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  
+  const { user, isLoading, error, setLoading, setError, dateRange } = useDashboardStore();
+
+  useEffect(() => {
+    if (!user) router.push('/login');
+  }, [user, router]);
+
+  const loadData = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          Math.random() < 0.05 ? reject(new Error("Connection Timeout")) : resolve(true);
+        }, 1500);
+      });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, user]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData, dateRange]);
+
+  if (!user) return null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setSidebarOpen} />
+      
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        
+        <main className="p-4 md:p-8 space-y-6">
+          <DashboardFilters />
+
+          {error ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-red-100 dark:border-red-900/30">
+              <AlertCircle className="text-red-500 w-12 h-12 mb-4" />
+              <button onClick={loadData} className="px-6 py-2 bg-blue-600 text-white rounded-lg">Retry Sync</button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+         
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard title="Total Revenue" value="$54,230" change="+12.5%" isPositive={true} isLoading={isLoading} />
+                <StatCard title="Total Users" value="1,245" change="+5.2%" isPositive={true} isLoading={isLoading} />
+                <StatCard title="Orders" value="342" change="-2.1%" isPositive={false} isLoading={isLoading} />
+                <StatCard title="Conv. Rate" value="4.3%" change="+1.1%" isPositive={true} isLoading={isLoading} />
+              </div>
+
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ChartBox title="Revenue Trend">
+                  <RevenueChart />
+                </ChartBox>
+                <ChartBox title="Order Volume">
+                  <BarChart />
+                </ChartBox>
+              </div>
+
+             
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
+                <ChartBox title="Traffic Sources">
+                  <TrafficSourceChart />
+                </ChartBox>
+                <ChartBox title="User Distribution">
+                  <UserPieChart />
+                </ChartBox>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function ChartBox({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+      <h3 className="font-bold mb-6 text-slate-800 dark:text-slate-100">{title}</h3>
+      <Suspense fallback={<div className="h-[300px] w-full bg-slate-50 dark:bg-slate-800 animate-pulse rounded-xl" />}>
+        {children}
+      </Suspense>
     </div>
   );
 }
