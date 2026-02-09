@@ -13,7 +13,7 @@ const fullData = [
 ];
 
 export default function RevenueChart() {
-  const { dateRange, isInitialLoading } = useDashboardStore();
+const { dateRange, isLoading } = useDashboardStore();
 
   
   const getFilteredData = () => {
