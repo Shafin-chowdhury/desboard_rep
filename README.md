@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📊 AppifyDevs Analytics Dashboard
 
-## Getting Started
+A streamlined, high-performance analytics dashboard built to showcase modern frontend architecture, role-based access control, and a mobile-first user experience.
 
-First, run the development server:
+🔗 **Live Demo:** [INSERT_YOUR_VERCEL_LINK_HERE]
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS v4 (Zero-config, CSS-variable driven)
+- **State Management:** Zustand (Auth, Theme, and Data Filter persistence)
+- **Icons:** Lucide React
+- **Charts:** Recharts (Responsive SVG-based charts)
+- **Deployment:** Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ Architecture Decisions
 
-## Learn More
+1. **Tailwind v4 Engine:** Leveraged the latest Tailwind v4 "CSS-first" configuration to manage Dark Mode via CSS variables, reducing JS bundle size and improving style injection speed.
+2. **Pinned Layout Strategy:** Used a Flexbox-column layout for the Sidebar to ensure the User Profile and Sign-Out actions are always "anchored" to the bottom, improving accessibility on long navigation lists.
+3. **Atomic Component Structure:** Divided the dashboard into memoized "StatCards" and "ChartBoxes" to prevent unnecessary re-renders when global filters (Date/User Type) change.
+4. **Zustand for Auth:** Chose Zustand over Context API for its lightweight footprint and ease of use in handling simulated login states and role-based permissions.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧠 Assumptions Made
+- **Data Freshness:** Assumed a 1.5-second network latency to simulate real-world API fetch cycles (handled via loading skeletons).
+- **Role Permissions:** Assumed that while 'Admin' and 'Manager' share most data, 'Admin' has exclusive access to sensitive system settings (UI-restricted).
+- **Persistence:** Assumed that session persistence should be handled locally for the sake of the demo, allowing users to refresh the page without being logged out.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 Setup Instructions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Clone the repo:**
+   ```bash
+   git clone [https://github.com/Shafin-chowdhury/desboard_rep.git](https://github.com/Shafin-chowdhury/desboard_rep.git)
+   cd desboard_rep
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   Credentials
+   Username - admin
+   password - admin123
+
+   username - manager
+   password - manager123
+   
