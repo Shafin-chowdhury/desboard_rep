@@ -2,7 +2,7 @@
 
 A streamlined, high-performance analytics dashboard built to showcase modern frontend architecture, role-based access control, and a mobile-first user experience.
 
-🔗 **Live Demo:** [INSERT_YOUR_VERCEL_LINK_HERE]
+🔗 **Live Demo:** (https://desboard-rep.vercel.app/)
 
 ---
 
